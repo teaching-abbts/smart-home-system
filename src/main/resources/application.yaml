@@ -1,6 +1,6 @@
 ktor:
     application:
         modules:
-            - ch.abbts.ApplicationKt.module
+            - ch.abbts.ApplicationKt.myModule
     deployment:
         port: 8080
