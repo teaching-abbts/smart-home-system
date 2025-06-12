@@ -4,7 +4,7 @@
   "features": {
     "ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {
       "jdkDistro": "tem",
-      "jdkVersion": "24",
+      "jdkVersion": "21",
       "version": "2.1.21"
     }
   },
@@ -15,7 +15,9 @@
         "vscode-icons-team.vscode-icons",
         "fwcd.kotlin",
         "vscjava.vscode-gradle",
-        "redhat.java"
+        "redhat.java",
+        "mhutchie.git-graph",
+        "tamasfe.even-better-toml"
       ]
     }
   }
