@@ -1,3 +1,16 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/base:dev-ubuntu-24.04"
+  "name": "Smart Home System DEV",
+  "image": "mcr.microsoft.com/devcontainers/base:dev-ubuntu-24.04",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode-remote.remote-containers",
+        "vscode-icons-team.vscode-icons",
+        "fwcd.kotlin"
+      ]
+    }
+  }
 }
