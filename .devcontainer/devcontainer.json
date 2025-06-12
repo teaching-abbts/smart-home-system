@@ -2,7 +2,11 @@
   "name": "Smart Home System DEV",
   "image": "mcr.microsoft.com/devcontainers/base:dev-ubuntu-24.04",
   "features": {
-    "ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {}
+    "ghcr.io/devcontainers-extra/features/kotlin-sdkman:2": {
+      "jdkDistro": "tem",
+      "jdkVersion": "24",
+      "version": "2.1.21"
+    }
   },
   "customizations": {
     "vscode": {
