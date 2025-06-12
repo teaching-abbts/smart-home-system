@@ -9,7 +9,8 @@
       "extensions": [
         "ms-vscode-remote.remote-containers",
         "vscode-icons-team.vscode-icons",
-        "fwcd.kotlin"
+        "fwcd.kotlin",
+        "vscjava.vscode-gradle"
       ]
     }
   }
