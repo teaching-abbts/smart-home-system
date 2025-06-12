@@ -10,7 +10,8 @@
         "ms-vscode-remote.remote-containers",
         "vscode-icons-team.vscode-icons",
         "fwcd.kotlin",
-        "vscjava.vscode-gradle"
+        "vscjava.vscode-gradle",
+        "redhat.java"
       ]
     }
   }
