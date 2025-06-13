@@ -6,19 +6,19 @@ import io.ktor.server.response.*
 import io.ktor.server.request.*
 import io.ktor.http.*
 
-fun Application.mapMyFirstForm() {
+fun Application.mapSimpleForm() {
     routing {
         val sendActionPath = "/senden"
 
         get("/") {
-            val title = "Mein erstes Formular"
+            val title = "Simples Formular"
 
             call.respondText(
                 """
                     <!doctype html>
                     <html>
                     <head>
-                        <title>${title}</title>
+                        <title>$title</title>
                         <style>
                         body {
                             width: 100%;
@@ -37,14 +37,18 @@ fun Application.mapMyFirstForm() {
                             background-color: white;
                         }
 
+                        input[type="text"], input[type="email"] {
+                            width: 100%;
+                        }
+
                         input[type="submit"] {
                             margin-top: 5px;
                         }
                         </style>
                     </head>
                     <body>
-                        <h2>${title}</h2>
-                        <form action="${sendActionPath}" method="post">
+                        <h2>$title</h2>
+                        <form action="$sendActionPath" method="post">
                         <label for="name">Name:</label><br />
                         <input type="text" id="name" name="name" /><br />
                         <label for="email">Email:</label><br />

@@ -11,5 +11,6 @@ fun main(args: Array<String>) {
 }
 
 fun Application.myModule() {
-    mapMyFirstForm()
+    mapSimpleForm()
+    mapMultipartForm()
 }
