@@ -13,4 +13,5 @@ fun main(args: Array<String>) {
 fun Application.myModule() {
     mapSimpleForm()
     mapMultipartForm()
+    mapImageGallery()
 }
