@@ -6,6 +6,7 @@ import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.request.*
+import io.ktor.utils.io.toByteArray
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
@@ -18,13 +19,13 @@ fun Application.mapMultipartForm() {
 
         get(uploadImagePath) {
             val title = "Multipart Formular"
-            var acceptMimeTypes = "image/png, image/jpeg"
+            val acceptMimeTypes = "image/png, image/jpeg"
 
             call.respondText(
                 """
-                    <!doctype html>
-                    <html>
-                    <head>
+                <!doctype html>
+                <html>
+                    <header>
                         <title>$title</title>
                         <style>
                         body {
@@ -52,7 +53,7 @@ fun Application.mapMultipartForm() {
                             margin-top: 5px;
                         }
                         </style>
-                    </head>
+                    </header>
                     <body>
                         <h2>$title</h2>
                         <form action="$uploadImagePath" method="post" enctype="multipart/form-data">
@@ -66,7 +67,7 @@ fun Application.mapMultipartForm() {
                         <input type="submit" value="Submit" />
                         </form>
                     </body>
-                    </html>
+                </html>
                 """,
                 ContentType.Text.Html,
                 HttpStatusCode.OK)
@@ -83,7 +84,7 @@ fun Application.mapMultipartForm() {
                     val fileName = part.originalFileName as String
                     println("*** originalFileName: $fileName")
 
-                    val fileBytes = part.streamProvider().readBytes()
+                    val fileBytes = part.provider().toByteArray()
                     val file = File("$IMAGE_UPLOAD_DIRECTORY/$fileName")
 
                     // Ensure the parent directory exists
