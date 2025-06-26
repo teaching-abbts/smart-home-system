@@ -16,4 +16,5 @@ fun Application.myModule() {
     }
     mapImageApi()
     mapImageGalleryApi()
+    mapSinglePageApplication()
 }
