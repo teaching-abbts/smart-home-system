@@ -69,7 +69,12 @@ fun Application.mapImageApi() {
 
             try {
                 if (file.exists()) {
-                    file.delete()
+                    if (file.delete()) {
+                        call.respond(HttpStatusCode.OK)
+                    }
+                    else {
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
                 }
                 else {
                     call.respond(HttpStatusCode.NotFound)

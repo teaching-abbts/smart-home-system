@@ -9,7 +9,10 @@ import java.io.File
 const val IMAGE_DIRECTORY = "src/main/resources/images"
 
 @Serializable
-data class ImageGallery(val imageUrls: List<String>)
+data class Image(val url: String, val name: String)
+
+@Serializable
+data class ImageGallery(val images: List<Image>)
 
 fun Application.mapImageGalleryApi() {
     routing {
@@ -17,12 +20,12 @@ fun Application.mapImageGalleryApi() {
 
         get(imageGalleryUrl) {
             val directory = File(IMAGE_DIRECTORY)
-            val images = directory.listFiles()
+            val imageFiles = directory.listFiles()
                 ?.filter { it.isFile and (it.name.endsWith(".jpg") or it.name.endsWith(".png")) }
                 ?: emptyList()
 
-            val imageUrls = images.map { "/image/get/${it.name}" }
-            val imageGallery = ImageGallery(imageUrls)
+            val images = imageFiles.map { Image("/image/get/${it.name}", it.nameWithoutExtension) }
+            val imageGallery = ImageGallery(images)
 
             call.respond(imageGallery)
         }
