@@ -6,7 +6,7 @@
         {{ imageUrl }}
       </li>
     </ul>
-    <h1>No Images... 😢</h1>
+    <h1 v-else>No Images... 😢</h1>
   </div>
 </template>
 
