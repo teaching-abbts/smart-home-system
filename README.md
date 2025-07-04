@@ -13,4 +13,4 @@ A tutoring project in NDS Software Engineering at the ABB Technikerschule in Bad
 - Run `gradlew run` to start the **Ktor Backend**.
 - Open another terminal in the `src/main/vue-project` directory.
 - Run `npm install` to install the Vue.js dependencies.
-- Run `npm run serve` to start the Vue.js frontend.
+- Run `npm run dev` to start the Vue.js frontend.
