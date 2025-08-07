@@ -1,18 +1,20 @@
 package ch.abbts
 
 import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import io.ktor.server.netty.*
+import ch.abbts.routes.*
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.plugins.contentnegotiation.*
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
 }
 
 fun Application.myModule() {
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
+    install(ContentNegotiation) {
+        json()
     }
+    mapImageApi()
+    mapImageGalleryApi()
+    mapSinglePageApplication()
 }

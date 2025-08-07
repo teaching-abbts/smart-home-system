@@ -6,6 +6,10 @@
       "jdkDistro": "tem",
       "jdkVersion": "21",
       "version": "2.1.21"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts",
+      "installNpmGlobally": true
     }
   },
   "customizations": {
