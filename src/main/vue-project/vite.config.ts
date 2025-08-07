@@ -17,8 +17,22 @@ export default defineConfig({
   server: {
     // https://vite.dev/config/server-options.html#server-proxy
     proxy: {
-      "/image-gallery": webhost,
-      "^/image/.*": webhost,
+      "/image-gallery": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "^/image/.*": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "/user-info": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "/login": {
+        target: webhost,
+        changeOrigin: true,
+      },
     },
   },
 });

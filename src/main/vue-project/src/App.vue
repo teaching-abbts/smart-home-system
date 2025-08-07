@@ -3,14 +3,10 @@
     <v-navigation-drawer v-model="drawer">
       <v-list-item title="My Application" subtitle="Vuetify"></v-list-item>
       <v-divider />
+      <AppUserInfo />
+      <v-divider />
       <v-container>
-        <v-switch
-          v-model="isDarkTheme"
-          true-icon="mdi-moon-waning-crescent"
-          false-icon="mdi-white-balance-sunny"
-          density="comfortable"
-          hide-details
-        />
+        <AppThemeSwitch />
       </v-container>
       <v-divider />
       <v-list-item link title="Home" to="/"></v-list-item>
@@ -30,14 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
-import { useTheme } from "vuetify";
-
-const theme = useTheme();
+import { ref } from "vue";
+import AppThemeSwitch from "./components/AppThemeSwitch.vue";
+import AppUserInfo from "./components/AppUserInfo.vue";
 
 const drawer = ref<boolean | null>(null);
-const isDarkTheme = computed({
-  get: () => theme.current.value.dark,
-  set: (v) => (theme.global.name.value = v ? "dark" : "light"),
-});
 </script>

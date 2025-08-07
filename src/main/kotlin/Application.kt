@@ -17,6 +17,7 @@ fun Application.myModule() {
     }
     setupSessionAuthenticationWithRouting()
 
+    mapUserInfoRoutes()
     mapImageApi()
     mapImageGalleryApi()
     mapSinglePageApplication()

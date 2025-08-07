@@ -19,7 +19,7 @@ const val AUTH_SESSION_NAME:String = "auth_session"
 const val LOGIN_URL:String = "/login"
 const val PASSWORD_PARAM_NAME:String = "password"
 const val USER_PARAM_NAME:String = "username"
-const val USER_SESSION_COOKIE_MAX_AGE_SECONDS:Long = 60
+const val USER_SESSION_COOKIE_MAX_AGE_SECONDS:Long = 300
 const val USER_SESSION_COOKIE_NAME:String = "user_session"
 const val USER_SESSION_COOKIE_PATH:String = "/"
 
@@ -57,7 +57,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
                 authenticate(credential)
             }
             challenge {
-                call.respondRedirect(LOGIN_URL)
+                call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
             }
         }
         // Handle session-based authentication requests
@@ -66,7 +66,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
                 session
             }
             challenge {
-                call.respondRedirect(LOGIN_URL)
+                call.respond(HttpStatusCode.Unauthorized, "Session expired or invalid")
             }
         }
     }
@@ -74,6 +74,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
     routing {
         // GET /login
         // Allow anonymous users to access the login page
+        // Provide a minimalistic login form for user authentication as fallback
         get(LOGIN_URL) {
             val loginModel = LoginModel(
                 postUrl = LOGIN_URL,
@@ -120,7 +121,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
             }
         }
 
-        // Protected endpoint that requires session authentication
+        // Protected endpoints that require the user to have a valid session
         authenticate(AUTH_SESSION_NAME) {
             get(ROUTE_SESSION_INFO) {
                 val userSession = call.sessions.get<UserSession>()
