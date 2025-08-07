@@ -1,9 +1,10 @@
 package ch.abbts
 
+import ch.abbts.routes.*
+import ch.abbts.plugins.authentication.*
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
-import ch.abbts.routes.*
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.plugins.contentnegotiation.*
 
 fun main(args: Array<String>) {
@@ -14,6 +15,8 @@ fun Application.myModule() {
     install(ContentNegotiation) {
         json()
     }
+    setupSessionAuthenticationWithRouting()
+
     mapImageApi()
     mapImageGalleryApi()
     mapSinglePageApplication()

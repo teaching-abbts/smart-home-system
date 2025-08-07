@@ -14,3 +14,10 @@ A tutoring project in NDS Software Engineering at the ABB Technikerschule in Bad
 - Open another terminal in the `src/main/vue-project` directory.
 - Run `npm install` to install the Vue.js dependencies.
 - Run `npm run dev` to start the Vue.js frontend.
+
+## Various
+
+- Refresh Dependencies: `./gradlew clean --refresh-dependencies`
+- Build the Project: `./gradlew build`
+- Build the Project continuously: `./gradlew build --continuous`
+- Run the Project: `./gradlew run`
