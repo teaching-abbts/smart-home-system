@@ -21,3 +21,4 @@ A tutoring project in NDS Software Engineering at the ABB Technikerschule in Bad
 - Build the Project: `./gradlew build`
 - Build the Project continuously: `./gradlew build --continuous`
 - Run the Project: `./gradlew run`
+- Create a keystore: `keytool -keystore keystore.jks -alias sampleAlias -genkeypair -keyalg RSA -keysize 4096 -validity 3 -dname 'CN=localhost, OU=ktor, O=ktor, L=Unspecified, ST=Unspecified, C=US' -ext 'SAN:c=DNS:localhost,IP:127.0.0.1'`

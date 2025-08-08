@@ -1,6 +1,13 @@
 ktor:
-    application:
-        modules:
-            - ch.abbts.ApplicationKt.myModule
-    deployment:
-        port: 8080
+  application:
+    modules:
+      - ch.abbts.ApplicationKt.myModule
+  deployment:
+    port: 8080
+    sslPort: 8443
+  security:
+    ssl:
+      keyStore: keystore.jks
+      keyAlias: sampleAlias
+      keyStorePassword: foobar
+      privateKeyPassword: foobar
