@@ -19,73 +19,70 @@ import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 
 fun Application.mapImageApi() {
-    routing {
-        val imageApiBasePath = "/image"
+  routing {
+    val imageApiBasePath = "/image"
 
-        get("$imageApiBasePath/get/{imageName}") {
-            val imageName = call.parameters["imageName"]
-            val file = File("$IMAGE_DIRECTORY/$imageName")
+    get("$imageApiBasePath/get/{imageName}") {
+      val imageName = call.parameters["imageName"]
+      val file = File("$IMAGE_DIRECTORY/$imageName")
 
-            if (file.exists()) {
-                call.respondFile(file)
-            }
-            else {
-                call.respond(HttpStatusCode.NotFound)
-            }
-        }
-
-        post("$imageApiBasePath/upload") {
-            val multipartData = call.receiveMultipart()
-
-            multipartData.forEachPart { part ->
-                println("*** Uploading ${part.contentType}, ${part.name}")
-
-                when (part) {
-                    is PartData.FileItem -> {
-                        val fileName = part.originalFileName as String
-                        println("*** originalFileName: $fileName")
-
-                        val fileBytes = part.provider().toByteArray()
-                        val file = File("$IMAGE_DIRECTORY/$fileName")
-
-                        // Ensure the parent directory exists
-                        Files.createDirectories(file.toPath().parent)
-                        Files.write(file.toPath(), fileBytes, StandardOpenOption.CREATE)
-                    }
-
-                    else -> {
-                        // Do nothing for now...
-                    }
-                }
-                part.dispose()
-            }
-
-            call.respond(HttpStatusCode.OK)
-        }
-
-        delete("$imageApiBasePath/delete/{imageName}") {
-            val imageName = call.parameters["imageName"]
-            val file = File("$IMAGE_DIRECTORY/$imageName")
-
-            try {
-                if (file.exists()) {
-                    if (file.delete()) {
-                        call.respond(HttpStatusCode.OK)
-                    }
-                    else {
-                        call.respond(HttpStatusCode.InternalServerError)
-                    }
-                }
-                else {
-                    call.respond(HttpStatusCode.NotFound)
-                }
-            }
-            catch (e: Exception) {
-                call.respondText(
-                    e.localizedMessage,
-                    ContentType.Text.Plain,
-                    HttpStatusCode.InternalServerError)
-            }
-        }
+      if (file.exists()) {
+        call.respondFile(file)
+      } else {
+        call.respond(HttpStatusCode.NotFound)
+      }
     }
+
+    post("$imageApiBasePath/upload") {
+      val multipartData = call.receiveMultipart()
+
+      multipartData.forEachPart { part ->
+        println("*** Uploading ${part.contentType}, ${part.name}")
+
+        when (part) {
+          is PartData.FileItem -> {
+            val fileName = part.originalFileName as String
+            println("*** originalFileName: $fileName")
+
+            val fileBytes = part.provider().toByteArray()
+            val file = File("$IMAGE_DIRECTORY/$fileName")
+
+            // Ensure the parent directory exists
+            Files.createDirectories(file.toPath().parent)
+            Files.write(file.toPath(), fileBytes, StandardOpenOption.CREATE)
+          }
+
+          else -> {
+            // Do nothing for now...
+          }
+        }
+        part.dispose()
+      }
+
+      call.respond(HttpStatusCode.OK)
+    }
+
+    delete("$imageApiBasePath/delete/{imageName}") {
+      val imageName = call.parameters["imageName"]
+      val file = File("$IMAGE_DIRECTORY/$imageName")
+
+      try {
+        if (file.exists()) {
+          if (file.delete()) {
+            call.respond(HttpStatusCode.OK)
+          } else {
+            call.respond(HttpStatusCode.InternalServerError)
+          }
+        } else {
+          call.respond(HttpStatusCode.NotFound)
+        }
+      } catch (e: Exception) {
+        call.respondText(
+          e.localizedMessage,
+          ContentType.Text.Plain,
+          HttpStatusCode.InternalServerError
+        )
+      }
+    }
+  }
 }

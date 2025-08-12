@@ -6,9 +6,9 @@ import io.ktor.server.http.content.vue
 import io.ktor.server.routing.routing
 
 fun Application.mapSinglePageApplication() {
-    routing {
-        singlePageApplication {
-            vue("src/main/vue-project/dist")
-        }
+  routing {
+    singlePageApplication {
+      vue("src/main/vue-project/dist")
     }
+  }
 }

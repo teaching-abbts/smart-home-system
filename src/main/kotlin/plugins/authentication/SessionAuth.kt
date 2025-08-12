@@ -1,4 +1,4 @@
-package ch.abbts.plugins.authentication
+package ch.abbts.plugins.authentication.session
 
 import io.ktor.http.*
 import io.ktor.server.application.*

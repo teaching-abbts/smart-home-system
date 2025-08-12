@@ -15,19 +15,19 @@ data class Image(val url: String, val name: String)
 data class ImageGallery(val images: List<Image>)
 
 fun Application.mapImageGalleryApi() {
-    routing {
-        val imageGalleryUrl = "/image-gallery"
+  routing {
+    val imageGalleryUrl = "/image-gallery"
 
-        get(imageGalleryUrl) {
-            val directory = File(IMAGE_DIRECTORY)
-            val imageFiles = directory.listFiles()
-                ?.filter { it.isFile and (it.name.endsWith(".jpg") or it.name.endsWith(".png")) }
-                ?: emptyList()
+    get(imageGalleryUrl) {
+      val directory = File(IMAGE_DIRECTORY)
+      val imageFiles = directory.listFiles()
+        ?.filter { it.isFile and (it.name.endsWith(".jpg") or it.name.endsWith(".png")) }
+        ?: emptyList()
 
-            val images = imageFiles.map { Image("/image/get/${it.name}", it.nameWithoutExtension) }
-            val imageGallery = ImageGallery(images)
+      val images = imageFiles.map { Image("/image/get/${it.name}", it.nameWithoutExtension) }
+      val imageGallery = ImageGallery(images)
 
-            call.respond(imageGallery)
-        }
+      call.respond(imageGallery)
     }
+  }
 }
