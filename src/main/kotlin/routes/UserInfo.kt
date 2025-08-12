@@ -32,21 +32,5 @@ fun Application.mapUserInfoRoutes() {
                 call.respond(userInfo)
             }
         }
-
-        // API endpoint for JWT-based access
-        authenticate(KEYCLOAK_JWT_AUTH_NAME) {
-            get("/api/user-info") {
-                val principal = call.principal<KeycloakUserPrincipal>()
-                val userInfo =
-                        UserInfoResponse(
-                                name = principal?.name ?: "Unknown",
-                                email = principal?.email,
-                                username = principal?.username,
-                                roles = principal?.roles ?: emptyList()
-                        )
-
-                call.respond(userInfo)
-            }
-        }
     }
 }

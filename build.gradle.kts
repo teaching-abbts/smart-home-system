@@ -16,7 +16,6 @@ dependencies {
   implementation(libs.ktor.network.tls.certificates)
   implementation(libs.ktor.serialization.json)
   implementation(libs.ktor.server.auth)
-  implementation(libs.ktor.server.auth.jwt)
   implementation(libs.ktor.server.config.yaml)
   implementation(libs.ktor.server.content.negotiation)
   implementation(libs.ktor.server.core)

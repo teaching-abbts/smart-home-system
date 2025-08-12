@@ -18,5 +18,3 @@ ktor:
         clientId: "smart-home-app"
         clientSecret: "smart-home-client-secret"
         redirectUri: "http://localhost:8080/auth/callback"
-        jwksUri: "http://localhost:8081/realms/smart-home/protocol/openid-connect/certs"
-        issuer: "http://localhost:8081/realms/smart-home"
