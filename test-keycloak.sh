@@ -2,19 +2,40 @@
 
 # Keycloak Smart Home System - Authentication Test Script
 
+# Configuration Variables
+KEYCLOAK_URL="http://localhost:8081"
+REALM_NAME="smart-home"
+CLIENT_ID="smart-home-app"
+CLIENT_SECRET="smart-home-client-secret"
+
+# User Credentials
+REGULAR_USERNAME="smarthome-user"
+REGULAR_PASSWORD="smarthome123"
+ADMIN_USERNAME="admin-user"
+ADMIN_PASSWORD="admin123"
+
+# Test Credentials (for security test)
+WRONG_USERNAME="wrong-user"
+WRONG_PASSWORD="wrong-pass"
+
+# Derived URLs
+TOKEN_ENDPOINT="${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/token"
+AUTH_ENDPOINT="${KEYCLOAK_URL}/realms/${REALM_NAME}/protocol/openid-connect/auth"
+REALM_ENDPOINT="${KEYCLOAK_URL}/realms/${REALM_NAME}"
+
 echo "🏠 Smart Home Keycloak Authentication Test"
 echo "=========================================="
 echo
 
 # Test regular user authentication
 echo "1. Testing Regular User Authentication..."
-echo "Username: smarthome-user"
-echo "Password: smarthome123"
+echo "Username: $REGULAR_USERNAME"
+echo "Password: $REGULAR_PASSWORD"
 echo
 
-REGULAR_USER_RESPONSE=$(curl -s -X POST "http://localhost:8081/realms/smart-home/protocol/openid-connect/token" \
+REGULAR_USER_RESPONSE=$(curl -s -X POST "$TOKEN_ENDPOINT" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=password&client_id=smart-home-app&client_secret=smart-home-client-secret&username=smarthome-user&password=smarthome123")
+  -d "grant_type=password&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${REGULAR_USERNAME}&password=${REGULAR_PASSWORD}")
 
 if echo "$REGULAR_USER_RESPONSE" | grep -q "access_token"; then
     echo "✅ Regular user authentication: SUCCESS"
@@ -33,13 +54,13 @@ echo
 
 # Test admin user authentication
 echo "2. Testing Admin User Authentication..."
-echo "Username: admin-user"
-echo "Password: admin123"
+echo "Username: $ADMIN_USERNAME"
+echo "Password: $ADMIN_PASSWORD"
 echo
 
-ADMIN_USER_RESPONSE=$(curl -s -X POST "http://localhost:8081/realms/smart-home/protocol/openid-connect/token" \
+ADMIN_USER_RESPONSE=$(curl -s -X POST "$TOKEN_ENDPOINT" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=password&client_id=smart-home-app&client_secret=smart-home-client-secret&username=admin-user&password=admin123")
+  -d "grant_type=password&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${ADMIN_USERNAME}&password=${ADMIN_PASSWORD}")
 
 if echo "$ADMIN_USER_RESPONSE" | grep -q "access_token"; then
     echo "✅ Admin user authentication: SUCCESS"
@@ -58,11 +79,11 @@ echo
 
 # Test realm accessibility
 echo "3. Testing Realm Accessibility..."
-REALM_RESPONSE=$(curl -s "http://localhost:8081/realms/smart-home")
+REALM_RESPONSE=$(curl -s "$REALM_ENDPOINT")
 
-if echo "$REALM_RESPONSE" | grep -q "smart-home"; then
+if echo "$REALM_RESPONSE" | grep -q "$REALM_NAME"; then
     echo "✅ Realm accessibility: SUCCESS"
-    echo "   Realm: smart-home"
+    echo "   Realm: $REALM_NAME"
     echo "   Token service: $(echo "$REALM_RESPONSE" | grep -o '"token-service":"[^"]*' | cut -d'"' -f4)"
 else
     echo "❌ Realm accessibility: FAILED"
@@ -73,9 +94,9 @@ echo
 
 # Test incorrect credentials
 echo "4. Testing Security (Wrong Credentials)..."
-WRONG_CREDS_RESPONSE=$(curl -s -X POST "http://localhost:8081/realms/smart-home/protocol/openid-connect/token" \
+WRONG_CREDS_RESPONSE=$(curl -s -X POST "$TOKEN_ENDPOINT" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "grant_type=password&client_id=smart-home-app&client_secret=smart-home-client-secret&username=wrong-user&password=wrong-pass")
+  -d "grant_type=password&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&username=${WRONG_USERNAME}&password=${WRONG_PASSWORD}")
 
 if echo "$WRONG_CREDS_RESPONSE" | grep -q "error"; then
     echo "✅ Security test: SUCCESS (correctly rejected invalid credentials)"
@@ -87,13 +108,13 @@ echo
 echo "🎉 Keycloak Setup Complete!"
 echo
 echo "📋 Summary for Ktor Integration:"
-echo "  • Keycloak URL: http://localhost:8081"
-echo "  • Realm: smart-home"
-echo "  • Client ID: smart-home-app"
-echo "  • Client Secret: smart-home-client-secret"
-echo "  • Token Endpoint: http://localhost:8081/realms/smart-home/protocol/openid-connect/token"
-echo "  • Auth Endpoint: http://localhost:8081/realms/smart-home/protocol/openid-connect/auth"
+echo "  • Keycloak URL: $KEYCLOAK_URL"
+echo "  • Realm: $REALM_NAME"
+echo "  • Client ID: $CLIENT_ID"
+echo "  • Client Secret: $CLIENT_SECRET"
+echo "  • Token Endpoint: $TOKEN_ENDPOINT"
+echo "  • Auth Endpoint: $AUTH_ENDPOINT"
 echo
 echo "👥 Test Users:"
-echo "  • Regular: smarthome-user / smarthome123 (roles: user)"
-echo "  • Admin: admin-user / admin123 (roles: admin, user)"
+echo "  • Regular: $REGULAR_USERNAME / $REGULAR_PASSWORD (roles: user)"
+echo "  • Admin: $ADMIN_USERNAME / $ADMIN_PASSWORD (roles: admin, user)"
