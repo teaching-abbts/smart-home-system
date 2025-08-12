@@ -37,3 +37,7 @@ A tutoring project in NDS Software Engineering at the ABB Technikerschule in Bad
   ```
 
 - How to covert certs into a JKS: <https://ktor.io/docs/server-ssl.html#convert-certificate>
+
+## Keycloak
+
+[Keycloak config](./KEYCLOAK_CONFIG.md)
