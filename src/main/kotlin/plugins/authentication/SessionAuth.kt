@@ -9,12 +9,13 @@ import io.ktor.server.sessions.*
 import io.ktor.util.*
 import kotlinx.serialization.Serializable
 
-@Serializable data class UserSession(val name: String)
+@Serializable
+data class UserSession(val name: String)
 
 data class LoginModel(
-        val postUrl: String,
-        val userParamName: String,
-        val passwordParamName: String
+  val postUrl: String,
+  val userParamName: String,
+  val passwordParamName: String
 )
 
 const val AUTH_FORM_NAME: String = "auth_form"
@@ -27,54 +28,54 @@ const val USER_SESSION_COOKIE_NAME: String = "user_session"
 const val USER_SESSION_COOKIE_PATH: String = "/"
 
 private fun authenticate(credential: UserPasswordCredential): UserIdPrincipal? {
-    val digestFunction = getDigestFunction("SHA-256") { "ktor${it.length}" }
-    val usernameToPasswordMap = mutableMapOf<String, ByteArray>()
+  val digestFunction = getDigestFunction("SHA-256") { "ktor${it.length}" }
+  val usernameToPasswordMap = mutableMapOf<String, ByteArray>()
 
-    usernameToPasswordMap["admin"] = digestFunction("top-secret")
+  usernameToPasswordMap["admin"] = digestFunction("top-secret")
 
-    return if (usernameToPasswordMap.containsKey(credential.name) &&
-                    usernameToPasswordMap[credential.name].contentEquals(
-                            digestFunction(credential.password)
-                    )
-    ) {
-        UserIdPrincipal(credential.name)
-    } else {
-        null
-    }
+  return if (usernameToPasswordMap.containsKey(credential.name) &&
+    usernameToPasswordMap[credential.name].contentEquals(
+      digestFunction(credential.password)
+    )
+  ) {
+    UserIdPrincipal(credential.name)
+  } else {
+    null
+  }
 }
 
 fun Application.setupSessionAuthenticationWithRouting() {
-    install(Sessions) {
-        cookie<UserSession>(USER_SESSION_COOKIE_NAME) {
-            cookie.path = USER_SESSION_COOKIE_PATH
-            cookie.maxAgeInSeconds = USER_SESSION_COOKIE_MAX_AGE_SECONDS
-            cookie.httpOnly = true
-        }
+  install(Sessions) {
+    cookie<UserSession>(USER_SESSION_COOKIE_NAME) {
+      cookie.path = USER_SESSION_COOKIE_PATH
+      cookie.maxAgeInSeconds = USER_SESSION_COOKIE_MAX_AGE_SECONDS
+      cookie.httpOnly = true
     }
+  }
 
-    install(Authentication) {
-        // Handle form-based authentication requests
-        form(AUTH_FORM_NAME) {
-            userParamName = USER_PARAM_NAME
-            passwordParamName = PASSWORD_PARAM_NAME
+  install(Authentication) {
+    // Handle form-based authentication requests
+    form(AUTH_FORM_NAME) {
+      userParamName = USER_PARAM_NAME
+      passwordParamName = PASSWORD_PARAM_NAME
 
-            validate { credential -> authenticate(credential) }
-            challenge { call.respond(HttpStatusCode.Unauthorized, "Invalid credentials") }
-        }
-        // Handle session-based authentication requests
-        session<UserSession>(AUTH_SESSION_NAME) {
-            validate { session -> session }
-            challenge { call.respond(HttpStatusCode.Unauthorized, "Session expired or invalid") }
-        }
+      validate { credential -> authenticate(credential) }
+      challenge { call.respond(HttpStatusCode.Unauthorized, "Invalid credentials") }
     }
+    // Handle session-based authentication requests
+    session<UserSession>(AUTH_SESSION_NAME) {
+      validate { session -> session }
+      challenge { call.respond(HttpStatusCode.Unauthorized, "Session expired or invalid") }
+    }
+  }
 
-    routing {
-        // GET /login
-        // Allow anonymous users to access the login page
-        // Provide a minimalistic login form for user authentication as fallback
-        get(LOGIN_URL) {
-            call.respondText(
-                    """
+  routing {
+    // GET /login
+    // Allow anonymous users to access the login page
+    // Provide a minimalistic login form for user authentication as fallback
+    get(LOGIN_URL) {
+      call.respondText(
+        """
                 <html lang="de">
                 <body>
                     <form action="${LOGIN_URL}" enctype="application/x-www-form-urlencoded" method="post">
@@ -93,43 +94,43 @@ fun Application.setupSessionAuthenticationWithRouting() {
                 </body>
                 </html>
                 """,
-                    ContentType.Text.Html
-            )
-        }
-
-        val ROUTE_SESSION_INFO = "/session-info"
-
-        // Protected endpoints with form-based authentication
-        authenticate(AUTH_FORM_NAME) {
-            // POST /login
-            post(LOGIN_URL) {
-                val principal = call.principal<UserIdPrincipal>()
-                val userName = principal?.name.toString()
-                val userSession = UserSession(name = userName)
-                call.sessions.set(userSession)
-
-                // Authentication successful, redirecting to home
-                call.respondRedirect(ROUTE_SESSION_INFO)
-            }
-        }
-
-        // Protected endpoints that require the user to have a valid session
-        authenticate(AUTH_SESSION_NAME) {
-            get(ROUTE_SESSION_INFO) {
-                val userSession = call.sessions.get<UserSession>()
-
-                // Check if the user session exists
-                if (userSession != null) {
-                    call.respondText("Welcome, ${userSession.name}!")
-                } else {
-                    call.respondRedirect(LOGIN_URL)
-                }
-            }
-        }
-
-        get("/logout") {
-            call.sessions.clear<UserSession>()
-            call.respondRedirect(LOGIN_URL)
-        }
+        ContentType.Text.Html
+      )
     }
+
+    val ROUTE_SESSION_INFO = "/session-info"
+
+    // Protected endpoints with form-based authentication
+    authenticate(AUTH_FORM_NAME) {
+      // POST /login
+      post(LOGIN_URL) {
+        val principal = call.principal<UserIdPrincipal>()
+        val userName = principal?.name.toString()
+        val userSession = UserSession(name = userName)
+        call.sessions.set(userSession)
+
+        // Authentication successful, redirecting to home
+        call.respondRedirect(ROUTE_SESSION_INFO)
+      }
+    }
+
+    // Protected endpoints that require the user to have a valid session
+    authenticate(AUTH_SESSION_NAME) {
+      get(ROUTE_SESSION_INFO) {
+        val userSession = call.sessions.get<UserSession>()
+
+        // Check if the user session exists
+        if (userSession != null) {
+          call.respondText("Welcome, ${userSession.name}!")
+        } else {
+          call.respondRedirect(LOGIN_URL)
+        }
+      }
+    }
+
+    get("/logout") {
+      call.sessions.clear<UserSession>()
+      call.respondRedirect(LOGIN_URL)
+    }
+  }
 }
