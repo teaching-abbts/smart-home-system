@@ -25,3 +25,38 @@ dependencies {
   testImplementation(libs.kotlin.test.junit)
   testImplementation(libs.ktor.server.test.host)
 }
+
+data class CommandLineConfig(val cmd: String, val windowsCmd: String? = null)
+
+fun Exec.runCommandLine(commandLineConfig: CommandLineConfig) {
+  val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+
+  if (isWindows) {
+    commandLine("cmd.exe", "/C", commandLineConfig.windowsCmd ?: commandLineConfig.cmd)
+  } else {
+    commandLine(commandLineConfig.cmd.splitToSequence(' ').toList())
+  }
+}
+
+fun Exec.runCommandLine(vararg arguments: String) {
+  runCommandLine(CommandLineConfig(arguments.joinToString(" ")))
+}
+
+fun Exec.runPnpmCommand(vararg npmArguments: String) {
+  workingDir = File("src/main/vue-project")
+
+  runCommandLine("pnpm " + npmArguments.joinToString(" "))
+}
+
+tasks.register<Exec>("install-vue") {
+  group = "build setup"
+  description = "installs all the npm packages for the the vue-project."
+
+  runPnpmCommand("install")
+}
+
+tasks.register<Exec>("build-vue") {
+  group = "build"
+  description = "builds the vue-project."
+  runPnpmCommand("run", "build")
+}
