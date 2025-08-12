@@ -15,7 +15,8 @@ fun main(args: Array<String>) {
 fun Application.myModule() {
     setupJsonContentNegotiation()
     setupHttpsRedirect()
-    setupSessionAuthenticationWithRouting()
+    // Replace session auth with Keycloak auth
+    setupKeycloakAuthentication()
 
     mapUserInfoRoutes()
     mapImageApi()

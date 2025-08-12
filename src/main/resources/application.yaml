@@ -11,3 +11,12 @@ ktor:
       keyAlias: sampleAlias
       keyStorePassword: foobar
       privateKeyPassword: foobar
+    oauth:
+      keycloak:
+        authServerUrl: "http://localhost:8081"
+        realm: "smart-home"
+        clientId: "smart-home-app"
+        clientSecret: "smart-home-client-secret"
+        redirectUri: "http://localhost:8080/auth/callback"
+        jwksUri: "http://localhost:8081/realms/smart-home/protocol/openid-connect/certs"
+        issuer: "http://localhost:8081/realms/smart-home"
