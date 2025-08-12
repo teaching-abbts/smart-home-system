@@ -9,19 +9,22 @@ import io.ktor.server.sessions.*
 import io.ktor.util.*
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class UserSession(val name: String)
+@Serializable data class UserSession(val name: String)
 
-data class LoginModel(val postUrl: String, val userParamName: String, val passwordParamName: String)
+data class LoginModel(
+        val postUrl: String,
+        val userParamName: String,
+        val passwordParamName: String
+)
 
-const val AUTH_FORM_NAME:String = "auth_form"
-const val AUTH_SESSION_NAME:String = "auth_session"
-const val LOGIN_URL:String = "/login"
-const val PASSWORD_PARAM_NAME:String = "password"
-const val USER_PARAM_NAME:String = "username"
-const val USER_SESSION_COOKIE_MAX_AGE_SECONDS:Long = 300
-const val USER_SESSION_COOKIE_NAME:String = "user_session"
-const val USER_SESSION_COOKIE_PATH:String = "/"
+const val AUTH_FORM_NAME: String = "auth_form"
+const val AUTH_SESSION_NAME: String = "auth_session"
+const val LOGIN_URL: String = "/login"
+const val PASSWORD_PARAM_NAME: String = "password"
+const val USER_PARAM_NAME: String = "username"
+const val USER_SESSION_COOKIE_MAX_AGE_SECONDS: Long = 300
+const val USER_SESSION_COOKIE_NAME: String = "user_session"
+const val USER_SESSION_COOKIE_PATH: String = "/"
 
 private fun authenticate(credential: UserPasswordCredential): UserIdPrincipal? {
     val digestFunction = getDigestFunction("SHA-256") { "ktor${it.length}" }
@@ -29,9 +32,10 @@ private fun authenticate(credential: UserPasswordCredential): UserIdPrincipal? {
 
     usernameToPasswordMap["admin"] = digestFunction("top-secret")
 
-    return if (
-        usernameToPasswordMap.containsKey(credential.name)
-        && usernameToPasswordMap[credential.name].contentEquals(digestFunction(credential.password))
+    return if (usernameToPasswordMap.containsKey(credential.name) &&
+                    usernameToPasswordMap[credential.name].contentEquals(
+                            digestFunction(credential.password)
+                    )
     ) {
         UserIdPrincipal(credential.name)
     } else {
@@ -44,6 +48,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
         cookie<UserSession>(USER_SESSION_COOKIE_NAME) {
             cookie.path = USER_SESSION_COOKIE_PATH
             cookie.maxAgeInSeconds = USER_SESSION_COOKIE_MAX_AGE_SECONDS
+            cookie.httpOnly = true
         }
     }
 
@@ -53,21 +58,13 @@ fun Application.setupSessionAuthenticationWithRouting() {
             userParamName = USER_PARAM_NAME
             passwordParamName = PASSWORD_PARAM_NAME
 
-            validate { credential ->
-                authenticate(credential)
-            }
-            challenge {
-                call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
-            }
+            validate { credential -> authenticate(credential) }
+            challenge { call.respond(HttpStatusCode.Unauthorized, "Invalid credentials") }
         }
         // Handle session-based authentication requests
         session<UserSession>(AUTH_SESSION_NAME) {
-            validate { session ->
-                session
-            }
-            challenge {
-                call.respond(HttpStatusCode.Unauthorized, "Session expired or invalid")
-            }
+            validate { session -> session }
+            challenge { call.respond(HttpStatusCode.Unauthorized, "Session expired or invalid") }
         }
     }
 
@@ -76,13 +73,8 @@ fun Application.setupSessionAuthenticationWithRouting() {
         // Allow anonymous users to access the login page
         // Provide a minimalistic login form for user authentication as fallback
         get(LOGIN_URL) {
-            val loginModel = LoginModel(
-                postUrl = LOGIN_URL,
-                userParamName = USER_PARAM_NAME,
-                passwordParamName = PASSWORD_PARAM_NAME
-            )
             call.respondText(
-                """
+                    """
                 <html lang="de">
                 <body>
                     <form action="${LOGIN_URL}" enctype="application/x-www-form-urlencoded" method="post">
@@ -101,7 +93,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
                 </body>
                 </html>
                 """,
-                ContentType.Text.Html
+                    ContentType.Text.Html
             )
         }
 
@@ -111,7 +103,7 @@ fun Application.setupSessionAuthenticationWithRouting() {
         authenticate(AUTH_FORM_NAME) {
             // POST /login
             post(LOGIN_URL) {
-                val principal = call.principal<UserIdPrincipal>();
+                val principal = call.principal<UserIdPrincipal>()
                 val userName = principal?.name.toString()
                 val userSession = UserSession(name = userName)
                 call.sessions.set(userSession)
