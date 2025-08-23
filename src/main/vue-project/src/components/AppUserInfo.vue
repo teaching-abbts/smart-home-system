@@ -81,7 +81,7 @@ function onValidationFailed(errors: FieldValidationResult[]) {
 }
 
 onBeforeMount(async () => {
-  await tryFetchUserInfoAsync();
+  // await tryFetchUserInfoAsync();
 });
 
 defineExpose({

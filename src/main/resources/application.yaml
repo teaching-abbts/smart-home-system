@@ -1,4 +1,5 @@
 ktor:
+  development: true # Set to false in production
   application:
     modules:
       - ch.abbts.ApplicationKt.myModule
@@ -18,3 +19,6 @@ ktor:
         clientId: "smart-home-app"
         clientSecret: "smart-home-client-secret"
         redirectUri: "http://localhost:8080/auth/callback"
+
+vue:
+  devServerUrl: "https://localhost:5173" # Default Vite dev server URL

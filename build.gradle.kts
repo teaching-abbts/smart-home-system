@@ -75,7 +75,15 @@ tasks.register<Exec>("build-vue") {
   runPnpmCommand("run", "build")
 }
 
-// Make the build task depend on build-vue
+tasks.register<Exec>("run-vue") {
+  group = "smart-home-system"
+  description = "runs the vue-project."
+
+  dependsOn("install-vue")
+  runPnpmCommand("run", "dev")
+}
+
 tasks.named("build") {
+  // Make the build task depend on build-vue
   dependsOn("build-vue")
 }

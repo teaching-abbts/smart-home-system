@@ -8,20 +8,21 @@
       <button @click="loadImageGalleryAsync">🔄️ Nachladen</button>
     </p>
     <div v-if="imageGallery.images.length > 0">
-        <div
-          v-for="(image, index) in imageGallery.images"
-          :key="index" class="image"
-          :style="`background-image: url(${image.url})`"
-        >
-          <button @click="deleteImageAsync(index)">⛔ Löschen</button>
-        </div>
+      <div
+        v-for="(image, index) in imageGallery.images"
+        :key="index"
+        class="image"
+        :style="`background-image: url(${image.url})`"
+      >
+        <button @click="deleteImageAsync(index)">⛔ Löschen</button>
+      </div>
     </div>
     <h1 v-else>No Images... 😢</h1>
   </div>
 </template>
 
 <script lang="ts" setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import FileInput from "@/components/FileInput.vue";
 
 interface Image {
@@ -33,7 +34,7 @@ interface ImageGalleryResult {
   images: Image[];
 }
 
-const uploadFiles = ref<File[]>([])
+const uploadFiles = ref<File[]>([]);
 
 const imageGallery = ref<ImageGalleryResult>({
   images: [],
@@ -46,23 +47,22 @@ async function uploadImagesAsync() {
 
       uploadFiles.value.forEach((file) => {
         formData.append(`file[${file.name}]`, file);
-      })
+      });
 
       const response = await fetch("image/upload", {
         method: "POST",
         body: formData,
-      })
+      });
 
       if (!response.ok) {
         alert(response.statusText);
       }
-    }
-    catch (error) {
+    } catch (error) {
       alert(error);
     }
   }
 
-  uploadFiles.value = []
+  uploadFiles.value = [];
   await loadImageGalleryAsync();
 }
 
@@ -71,12 +71,11 @@ async function getImageGalleryAsync() {
     const response = await fetch("/image-gallery");
 
     if (response.ok) {
-      return await response.json() as ImageGalleryResult;
+      return (await response.json()) as ImageGalleryResult;
     }
 
-    throw new Error(response.statusText)
-  }
-  catch (error) {
+    throw new Error(response.statusText);
+  } catch (error) {
     alert(error);
 
     return {
@@ -88,6 +87,9 @@ async function getImageGalleryAsync() {
 async function deleteImageAsync(index: number) {
   try {
     const image = imageGallery.value.images[index];
+    if (!image) {
+      throw new Error("Image not found");
+    }
     const imageFullName = image.url.split("/").pop();
     const response = await fetch(`/image/delete/${imageFullName}`, {
       method: "DELETE",
@@ -96,12 +98,10 @@ async function deleteImageAsync(index: number) {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-  }
-  catch (error) {
+  } catch (error) {
     alert(error);
-  }
-  finally {
-    await loadImageGalleryAsync()
+  } finally {
+    await loadImageGalleryAsync();
   }
 }
 
@@ -109,7 +109,7 @@ async function loadImageGalleryAsync() {
   imageGallery.value = await getImageGalleryAsync();
 }
 
-onMounted(loadImageGalleryAsync)
+onMounted(loadImageGalleryAsync);
 </script>
 
 <style scoped>
