@@ -61,14 +61,14 @@ fun Exec.runPnpmCommand(vararg npmArguments: String) {
 }
 
 tasks.register<Exec>("install-vue") {
-  group = "build setup"
+  group = "smart-home-system"
   description = "installs all the npm packages for the the vue-project."
 
   runPnpmCommand("install")
 }
 
 tasks.register<Exec>("build-vue") {
-  group = "build"
+  group = "smart-home-system"
   description = "builds the vue-project."
   runPnpmCommand("run", "build")
 }

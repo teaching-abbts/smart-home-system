@@ -1,5 +1,6 @@
 package ch.abbts.plugins.authentication.keycloak
 
+import ch.abbts.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -18,7 +19,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 // Authentication provider names
-const val KEYCLOAK_SESSION_NAME = "keycloak-session"
 const val LOGIN_URL: String = "/login"
 
 // Data Models
