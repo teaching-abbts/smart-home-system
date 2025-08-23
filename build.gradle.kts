@@ -1,16 +1,24 @@
-plugins {
-  alias(libs.plugins.kotlin.jvm)
-  alias(libs.plugins.kotlin.serialization)
-  alias(libs.plugins.ktor)
-}
-
 group = "abb-ts.ch"
 
 version = "0.0.1"
 
 application { mainClass = "io.ktor.server.netty.EngineMain" }
 
-repositories { mavenCentral() }
+kotlin {
+  jvmToolchain(21)
+}
+
+repositories {
+  gradlePluginPortal()
+  google()
+  mavenCentral()
+}
+
+plugins {
+  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.ktor)
+}
 
 dependencies {
   implementation(libs.ktor.network.tls.certificates)
