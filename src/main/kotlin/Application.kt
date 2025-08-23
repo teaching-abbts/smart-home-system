@@ -7,6 +7,8 @@ import ch.abbts.routes.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
 
+const val KEYCLOAK_SESSION_NAME = "keycloak-session"
+
 fun main(args: Array<String>) {
   EngineMain.main(args)
 }

@@ -1,6 +1,7 @@
 package ch.abbts.routes
 
-import ch.abbts.plugins.authentication.*
+import ch.abbts.*
+import ch.abbts.plugins.authentication.keycloak.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.response.*
