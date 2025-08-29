@@ -4,7 +4,7 @@
     lines="two"
     prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
     subtitle="Logged In"
-    :title="userInfo?.name ?? 'Unknown User'"
+    :title="userTitle"
   >
     <template v-slot:append>
       <v-btn icon="mdi-logout" size="small" variant="text" @click="onLogoutClick"></v-btn>
@@ -27,24 +27,23 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/store/userStore";
 import { computed, onBeforeMount, ref } from "vue";
 // import AppLoginDialog from "./AppLoginDialog.vue";
 // import type { FieldValidationResult } from "vuetify/lib/composables/form.mjs";
-
-interface UserInfo {
-  name: string;
-  email?: string;
-}
 
 const userInfoUrl = "/user-info";
 
 const snackbarText = ref<string | null>(null);
 const showSnackbar = ref(false);
-const userInfo = ref<UserInfo | null>(null);
+
+const userStore = useUserStore();
 
 const isLoggedIn = computed(() => {
-  return userInfo.value !== null;
+  return userStore.currentUser !== null;
 });
+
+const userTitle = computed(() => userStore.currentUser?.email ?? "Unknown User");
 
 function onSnackbarClose() {
   showSnackbar.value = false;
@@ -58,13 +57,7 @@ function setSnackbarMessage(message: string | null) {
 
 async function tryFetchUserInfoAsync() {
   try {
-    const response = await fetch(userInfoUrl);
-
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}, ${await response.text()}`);
-    }
-
-    userInfo.value = (await response.json()) as UserInfo;
+    await userStore.fetchUserInfoAsync(userInfoUrl);
   } catch (error) {
     setSnackbarMessage(`Error fetching '${userInfoUrl}': \n\n${error}`);
   }
