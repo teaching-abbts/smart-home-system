@@ -216,7 +216,7 @@ fun Application.setupKeycloakAuthentication() {
           )
 
         call.sessions.set(session)
-        call.respondRedirect("/profile") // Redirect to a protected page
+        call.respondRedirect("/") // Redirect to a protected page
       } catch (e: Exception) {
         log.error("Failed to process OAuth callback", e)
         call.respond(HttpStatusCode.InternalServerError, "Authentication failed")
@@ -227,8 +227,9 @@ fun Application.setupKeycloakAuthentication() {
     get("/logout") {
       val session = call.sessions.get<KeycloakSession>()
       // If we have a session, perform Keycloak logout
-      if (session != null && session.idToken != null) {
+      if (session != null) {
         try {
+          call.sessions.clear<KeycloakSession>()
           // Call Keycloak logout endpoint to invalidate the session server-side
           val logoutUrl =
             "${config.authServerUrl}/realms/${config.realm}/protocol/openid-connect/logout" +
