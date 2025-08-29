@@ -5,13 +5,18 @@
     prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
     subtitle="Logged In"
     :title="userInfo?.name ?? 'Unknown User'"
-  />
+  >
+    <template v-slot:append>
+      <v-btn icon="mdi-logout" size="small" variant="text" @click="onLogoutClick"></v-btn>
+    </template>
+  </v-list-item>
   <v-list-item v-else>
-    <AppLoginDialog
+    <v-btn @click="onLoginClick" color="surface-variant" text="Login" variant="flat"> Login </v-btn>
+    <!-- <AppLoginDialog
       @login-success="onLoginSuccessAsync"
       @login-failure="onLoginFailure"
       @validation-failed="onValidationFailed"
-    />
+    /> -->
   </v-list-item>
   <v-snackbar v-model="showSnackbar">
     {{ snackbarText }}
@@ -23,8 +28,8 @@
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref } from "vue";
-import AppLoginDialog from "./AppLoginDialog.vue";
-import type { FieldValidationResult } from "vuetify/lib/composables/form.mjs";
+// import AppLoginDialog from "./AppLoginDialog.vue";
+// import type { FieldValidationResult } from "vuetify/lib/composables/form.mjs";
 
 interface UserInfo {
   name: string;
@@ -65,19 +70,27 @@ async function tryFetchUserInfoAsync() {
   }
 }
 
-async function onLoginSuccessAsync() {
-  await tryFetchUserInfoAsync();
-  setSnackbarMessage("Login successful!");
+// async function onLoginSuccessAsync() {
+//   await tryFetchUserInfoAsync();
+//   setSnackbarMessage("Login successful!");
+// }
+
+// function onLoginFailure(error: Error) {
+//   setSnackbarMessage(`Login failed: ${error.message}`);
+// }
+
+// function onValidationFailed(errors: FieldValidationResult[]) {
+//   setSnackbarMessage(
+//     `Validation failed: ${errors.map((e) => e.errorMessages.join(", ")).join(", ")}`,
+//   );
+// }
+
+function onLoginClick() {
+  window.location.href = "/login";
 }
 
-function onLoginFailure(error: Error) {
-  setSnackbarMessage(`Login failed: ${error.message}`);
-}
-
-function onValidationFailed(errors: FieldValidationResult[]) {
-  setSnackbarMessage(
-    `Validation failed: ${errors.map((e) => e.errorMessages.join(", ")).join(", ")}`,
-  );
+function onLogoutClick() {
+  window.location.href = "/logout";
 }
 
 onBeforeMount(async () => {

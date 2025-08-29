@@ -38,7 +38,8 @@ data class TokenResponse(
   val refresh_expires_in: Int,
   val refresh_token: String,
   val token_type: String,
-  val session_state: String? = null
+  val session_state: String? = null,
+  val id_token: String? = null
 )
 
 @Serializable
@@ -53,6 +54,7 @@ data class UserInfo(
   val roles: List<String> = emptyList()
 )
 
+
 @Serializable
 data class KeycloakSession(
   val userId: String,
@@ -62,6 +64,7 @@ data class KeycloakSession(
   val roles: List<String>,
   val accessToken: String,
   val refreshToken: String,
+  val idToken: String? = null,
   val sessionId: String = UUID.randomUUID().toString(),
   val createdAt: Long = System.currentTimeMillis()
 )
@@ -188,14 +191,16 @@ fun Application.setupKeycloakAuthentication() {
             .body<TokenResponse>()
 
         // Get user info using the access token
-        val userInfo =
+        val userInfoResponse =
           httpClient
             .get(
               "${config.authServerUrl}/realms/${config.realm}/protocol/openid-connect/userinfo"
             ) {
               header("Authorization", "Bearer ${tokenResponse.access_token}")
             }
-            .body<UserInfo>()
+
+        val userInfo = userInfoResponse
+          .body<UserInfo>()
 
         // Create session
         val session =
@@ -206,7 +211,8 @@ fun Application.setupKeycloakAuthentication() {
             name = userInfo.name,
             roles = userInfo.roles,
             accessToken = tokenResponse.access_token,
-            refreshToken = tokenResponse.refresh_token
+            refreshToken = tokenResponse.refresh_token,
+            idToken = tokenResponse.id_token
           )
 
         call.sessions.set(session)
@@ -220,16 +226,14 @@ fun Application.setupKeycloakAuthentication() {
     // Logout endpoint with proper Keycloak logout
     get("/logout") {
       val session = call.sessions.get<KeycloakSession>()
-      call.sessions.clear<KeycloakSession>()
-
       // If we have a session, perform Keycloak logout
-      if (session != null) {
+      if (session != null && session.idToken != null) {
         try {
           // Call Keycloak logout endpoint to invalidate the session server-side
           val logoutUrl =
             "${config.authServerUrl}/realms/${config.realm}/protocol/openid-connect/logout" +
-              "?post_logout_redirect_uri=http://localhost:8080" +
-              "&refresh_token=${session.refreshToken}"
+                    "?post_logout_redirect_uri=http://localhost:8080" +
+                    "&id_token_hint=${session.idToken}"
           call.respondRedirect(logoutUrl)
         } catch (e: Exception) {
           log.warn("Failed to logout from Keycloak", e)
@@ -277,8 +281,11 @@ fun Application.setupKeycloakAuthentication() {
                                 </div>
 
                                 <p>
-                                    <a href="/user-info">View User Info (JSON)</a> |
-                                    <a href="/logout">Logout</a>
+                                    <ul>
+                                        <li><a href="/">Home</a></li>
+                                        <li><a href="/user-info">View User Info (JSON)</a></li>
+                                        <li><a href="/logout">Logout</a></li>
+                                    </ul>
                                 </p>
                             </div>
                         </body>
