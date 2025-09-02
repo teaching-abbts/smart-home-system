@@ -118,7 +118,9 @@
       "secret": "smart-home-client-secret",
       "redirectUris": [
         "http://localhost:8080/*",
-        "http://localhost:8080/auth/callback/*"
+        "http://localhost:8080/auth/callback/*",
+        "https://localhost:8443/*",
+        "https://localhost:5173/*"
       ],
       "webOrigins": ["http://localhost:8080"],
       "protocol": "openid-connect",

@@ -79,11 +79,11 @@ async function tryFetchUserInfoAsync() {
 // }
 
 function onLoginClick() {
-  window.location.href = "/login";
+  window.location.href = `/login?redirect_uri=${encodeURIComponent(window.location.href)}`;
 }
 
 function onLogoutClick() {
-  window.location.href = "/logout";
+  window.location.href = `/logout?post_logout_redirect_uri=${encodeURIComponent(window.location.href)}`;
 }
 
 onBeforeMount(async () => {

@@ -148,6 +148,7 @@ fun Application.setupKeycloakAuthentication() {
   routing {
     // Login endpoint - redirects to Keycloak
     get(LOGIN_URL) {
+      val redirectUri = call.request.queryParameters["redirect_uri"] ?: "http://localhost:8080"
       val state = generateNonce()
       val authUrl = buildString {
         append(
@@ -225,6 +226,7 @@ fun Application.setupKeycloakAuthentication() {
 
     // Logout endpoint with proper Keycloak logout
     get("/logout") {
+      val postLogoutRedirectUri = call.request.queryParameters["post_logout_redirect_uri"] ?: "http://localhost:8080"
       val session = call.sessions.get<KeycloakSession>()
       // If we have a session, perform Keycloak logout
       if (session != null) {
@@ -233,7 +235,7 @@ fun Application.setupKeycloakAuthentication() {
           // Call Keycloak logout endpoint to invalidate the session server-side
           val logoutUrl =
             "${config.authServerUrl}/realms/${config.realm}/protocol/openid-connect/logout" +
-                    "?post_logout_redirect_uri=http://localhost:8080" +
+                    "?post_logout_redirect_uri=$postLogoutRedirectUri" +
                     "&id_token_hint=${session.idToken}"
           call.respondRedirect(logoutUrl)
         } catch (e: Exception) {

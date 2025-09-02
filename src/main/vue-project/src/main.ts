@@ -1,7 +1,7 @@
-import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./plugins/router";
 import vuetify from "./plugins/vuetify";
+import { createApp } from "vue";
 import { createPinia } from "pinia";
 
 const app = createApp(App);
