@@ -4,13 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build",
+    "dev": "vite",
+    "format": "prettier --write src/",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/logo.svg",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build"
   },
   "dependencies": {
     "pinia": "^3.0.3",
@@ -22,6 +23,7 @@
     "@mdi/font": "^7.4.47",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^22.18.0",
+    "@vite-pwa/assets-generator": "^1.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
@@ -34,6 +36,7 @@
     "typescript": "~5.9.2",
     "vite": "npm:rolldown-vite@7.1.5",
     "vite-plugin-mkcert": "^1.17.8",
+    "vite-plugin-pwa": "^1.0.3",
     "vite-plugin-vue-devtools": "^8.0.1",
     "vue-tsc": "^3.0.6"
   },
