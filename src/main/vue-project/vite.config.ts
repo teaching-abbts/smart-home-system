@@ -5,7 +5,7 @@ import { VitePWA } from "vite-plugin-pwa";
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 
-// const webhost = "http://127.0.0.1:8080";
+const webhost = "http://127.0.0.1:8080";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -61,24 +61,24 @@ export default defineConfig({
       key: "./certs/dev.pem",
     },
     // https://vite.dev/config/server-options.html#server-proxy
-    // proxy: {
-    //   "/image-gallery": {
-    //     target: webhost,
-    //     changeOrigin: true,
-    //   },
-    //   "^/image/.*": {
-    //     target: webhost,
-    //     changeOrigin: true,
-    //   },
-    //   "/user-info": {
-    //     target: webhost,
-    //     changeOrigin: true,
-    //   },
-    //   "/login": {
-    //     target: webhost,
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      "/image-gallery": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "^/image/.*": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "/user-info": {
+        target: webhost,
+        changeOrigin: true,
+      },
+      "/login": {
+        target: webhost,
+        changeOrigin: true,
+      },
+    },
     host: "0.0.0.0",
     port: 5173,
     hmr: {
