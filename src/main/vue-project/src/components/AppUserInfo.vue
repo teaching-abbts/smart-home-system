@@ -4,14 +4,19 @@
     lines="two"
     prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
     subtitle="Logged In"
-    :title="userInfo?.name ?? 'Unknown User'"
-  />
+    :title="userTitle"
+  >
+    <template v-slot:append>
+      <v-btn icon="mdi-logout" size="small" variant="text" @click="onLogoutClick"></v-btn>
+    </template>
+  </v-list-item>
   <v-list-item v-else>
-    <AppLoginDialog
+    <v-btn @click="onLoginClick" color="surface-variant" text="Login" variant="flat"> Login </v-btn>
+    <!-- <AppLoginDialog
       @login-success="onLoginSuccessAsync"
       @login-failure="onLoginFailure"
       @validation-failed="onValidationFailed"
-    />
+    /> -->
   </v-list-item>
   <v-snackbar v-model="showSnackbar">
     {{ snackbarText }}
@@ -22,24 +27,23 @@
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from "@/store/userStore";
 import { computed, onBeforeMount, ref } from "vue";
-import AppLoginDialog from "./AppLoginDialog.vue";
-import type { FieldValidationResult } from "vuetify/lib/composables/form.mjs";
-
-interface UserInfo {
-  name: string;
-  email?: string;
-}
+// import AppLoginDialog from "./AppLoginDialog.vue";
+// import type { FieldValidationResult } from "vuetify/lib/composables/form.mjs";
 
 const userInfoUrl = "/user-info";
 
 const snackbarText = ref<string | null>(null);
 const showSnackbar = ref(false);
-const userInfo = ref<UserInfo | null>(null);
+
+const userStore = useUserStore();
 
 const isLoggedIn = computed(() => {
-  return userInfo.value !== null;
+  return userStore.currentUser !== null;
 });
+
+const userTitle = computed(() => userStore.currentUser?.email ?? "Unknown User");
 
 function onSnackbarClose() {
   showSnackbar.value = false;
@@ -53,31 +57,33 @@ function setSnackbarMessage(message: string | null) {
 
 async function tryFetchUserInfoAsync() {
   try {
-    const response = await fetch(userInfoUrl);
-
-    if (!response.ok) {
-      throw new Error(`${response.status}: ${response.statusText}, ${await response.text()}`);
-    }
-
-    userInfo.value = (await response.json()) as UserInfo;
+    await userStore.fetchUserInfoAsync(userInfoUrl);
   } catch (error) {
     setSnackbarMessage(`Error fetching '${userInfoUrl}': \n\n${error}`);
   }
 }
 
-async function onLoginSuccessAsync() {
-  await tryFetchUserInfoAsync();
-  setSnackbarMessage("Login successful!");
+// async function onLoginSuccessAsync() {
+//   await tryFetchUserInfoAsync();
+//   setSnackbarMessage("Login successful!");
+// }
+
+// function onLoginFailure(error: Error) {
+//   setSnackbarMessage(`Login failed: ${error.message}`);
+// }
+
+// function onValidationFailed(errors: FieldValidationResult[]) {
+//   setSnackbarMessage(
+//     `Validation failed: ${errors.map((e) => e.errorMessages.join(", ")).join(", ")}`,
+//   );
+// }
+
+function onLoginClick() {
+  window.location.href = "/login";
 }
 
-function onLoginFailure(error: Error) {
-  setSnackbarMessage(`Login failed: ${error.message}`);
-}
-
-function onValidationFailed(errors: FieldValidationResult[]) {
-  setSnackbarMessage(
-    `Validation failed: ${errors.map((e) => e.errorMessages.join(", ")).join(", ")}`,
-  );
+function onLogoutClick() {
+  window.location.href = "/logout";
 }
 
 onBeforeMount(async () => {

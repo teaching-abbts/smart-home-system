@@ -1,6 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useUserStore } from "@/store/userStore";
+import TheWelcome from "../components/TheWelcome.vue";
+
+const userStore = useUserStore();
+</script>
 
 <template>
-  <h1>Header 1</h1>
-  <h2>Header 2</h2>
+  <h1 v-if="userStore.currentUser">Welcome, {{ userStore.currentUser.name }}!</h1>
+  <TheWelcome />
 </template>

@@ -1,4 +1,4 @@
-package ch.abbts.plugins.authentication.session
+package ch.abbts.plugins.authentication.standalone
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -44,7 +44,7 @@ private fun authenticate(credential: UserPasswordCredential): UserIdPrincipal? {
   }
 }
 
-fun Application.setupSessionAuthenticationWithRouting() {
+fun Application.setupStandaloneAuthenticationWithRouting() {
   install(Sessions) {
     cookie<UserSession>(USER_SESSION_COOKIE_NAME) {
       cookie.path = USER_SESSION_COOKIE_PATH
