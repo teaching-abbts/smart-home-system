@@ -1,6 +1,7 @@
 package ch.abbts
 
 import ch.abbts.plugins.authentication.keycloak.*
+import ch.abbts.plugins.cors.*
 import ch.abbts.plugins.http.*
 import ch.abbts.plugins.json.*
 import ch.abbts.routes.*
@@ -14,6 +15,7 @@ fun main(args: Array<String>) {
 }
 
 fun Application.myModule() {
+  setupCORS()
   setupJsonContentNegotiation()
   setupHttpsRedirect()
   setupKeycloakAuthentication()
@@ -21,5 +23,5 @@ fun Application.myModule() {
   mapUserInfoRoutes()
   mapImageApi()
   mapImageGalleryApi()
-  mapSinglePageApplication()
+  // mapSinglePageApplication()
 }

@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import AppThemeSwitch from "./components/AppThemeSwitch.vue";
 import AppUserInfo from "./components/AppUserInfo.vue";
 

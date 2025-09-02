@@ -55,7 +55,7 @@ export default defineConfig({
     },
   },
   server: {
-    cors: true,
+    // cors: true,
     https: {
       cert: "./certs/cert.pem",
       key: "./certs/dev.pem",

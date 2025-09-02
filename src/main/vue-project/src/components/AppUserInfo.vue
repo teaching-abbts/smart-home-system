@@ -87,7 +87,7 @@ function onLogoutClick() {
 }
 
 onBeforeMount(async () => {
-  // await tryFetchUserInfoAsync();
+  await tryFetchUserInfoAsync();
 });
 
 defineExpose({
