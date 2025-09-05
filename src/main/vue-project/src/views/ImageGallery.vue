@@ -121,7 +121,7 @@ async function getImageGalleryAsync() {
       // The service worker will handle serving from cache
       // If it fails, we'll fall back to empty images array
     } else {
-      // alert(error);
+      console.error(error);
     }
 
     return {
