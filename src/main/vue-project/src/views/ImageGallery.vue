@@ -9,10 +9,11 @@
     </p>
     <div v-if="imageGallery.images.length > 0">
       <div
-        v-for="(image, index) in imageGallery.images"
         :key="index"
-        class="image"
         :style="`background-image: url(${image.url})`"
+        :class="['image', { 'image-loaded': loadedImages.has(image.url) }]"
+        v-for="(image, index) in imageGallery.images"
+        :title="image.name"
       >
         <button @click="deleteImageAsync(index)">⛔ Löschen</button>
       </div>
@@ -39,6 +40,20 @@ const uploadFiles = ref<File[]>([]);
 const imageGallery = ref<ImageGalleryResult>({
   images: [],
 });
+
+const loadedImages = ref<Set<string>>(new Set());
+
+function preloadImage(url: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      loadedImages.value.add(url);
+      resolve();
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
 
 async function uploadImagesAsync() {
   if (uploadFiles.value.length > 0) {
@@ -107,9 +122,18 @@ async function deleteImageAsync(index: number) {
 
 async function loadImageGalleryAsync() {
   imageGallery.value = await getImageGalleryAsync();
+
+  // Preload all images
+  const preloadPromises = imageGallery.value.images.map((image) =>
+    preloadImage(image.url).catch(console.error),
+  );
+
+  await Promise.allSettled(preloadPromises);
 }
 
-onMounted(loadImageGalleryAsync);
+onMounted(async () => {
+  await loadImageGalleryAsync();
+});
 </script>
 
 <style scoped>
@@ -118,5 +142,37 @@ onMounted(loadImageGalleryAsync);
   width: 300px;
   height: 300px;
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  margin: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.image:not(.image-loaded) {
+  opacity: 0.5;
+  background-color: #f0f0f0;
+}
+
+.image-loaded {
+  opacity: 1;
+}
+
+.image button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.image button:hover {
+  background: rgba(255, 255, 255, 1);
 }
 </style>

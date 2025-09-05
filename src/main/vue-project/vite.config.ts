@@ -46,6 +46,24 @@ export default defineConfig({
       devOptions: {
         enabled: true,
       },
+      workbox: {
+        runtimeCaching: [
+          {
+            handler: "CacheFirst",
+            urlPattern: /\/image\/.*/i,
+            options: {
+              cacheName: "image-cache",
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
     }),
     vueDevTools(),
   ],

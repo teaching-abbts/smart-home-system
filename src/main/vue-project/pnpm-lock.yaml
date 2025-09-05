@@ -78,6 +78,18 @@ importers:
       vue-tsc:
         specifier: ^3.0.6
         version: 3.0.6(typescript@5.9.2)
+      workbox-build:
+        specifier: ^7.3.0
+        version: 7.3.0
+      workbox-core:
+        specifier: ^7.3.0
+        version: 7.3.0
+      workbox-routing:
+        specifier: ^7.3.0
+        version: 7.3.0
+      workbox-strategies:
+        specifier: ^7.3.0
+        version: 7.3.0
 
 packages:
 
