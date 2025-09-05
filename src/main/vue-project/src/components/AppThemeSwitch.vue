@@ -9,13 +9,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { watchEffect } from "vue";
 import { useTheme } from "vuetify";
+import { useStorage } from "@vueuse/core";
 
 const theme = useTheme();
 
-const isDarkTheme = computed({
-  get: () => theme.current.value.dark,
-  set: (v) => (theme.global.name.value = v ? "dark" : "light"),
+const isDarkTheme = useStorage("isDarkTheme", theme.current.value.dark);
+
+watchEffect(() => {
+  theme.global.name.value = isDarkTheme.value ? "dark" : "light";
 });
 </script>
