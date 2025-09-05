@@ -1,5 +1,5 @@
 ktor:
-  development: true # Set to false in production
+  development: false # Set to false in production
   application:
     modules:
       - ch.abbts.ApplicationKt.myModule

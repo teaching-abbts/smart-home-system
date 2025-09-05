@@ -1,11 +1,13 @@
 <template>
   <div>
+    <div v-if="isOffline" class="offline-banner">
+      🔌 Offline-Modus - Zeige zwischengespeicherte Bilder
+    </div>
     <p>
       <FileInput v-model="uploadFiles" :accept="['image/png', 'image/jpeg']" multiple />
-      <button @click="uploadImagesAsync">⬆️ Hochladen</button>
-    </p>
-    <p>
+      <button class="mr-2" @click="uploadImagesAsync" :disabled="isOffline">⬆️ Hochladen</button>
       <button @click="loadImageGalleryAsync">🔄️ Nachladen</button>
+      <span v-if="isLoading" class="loading-indicator">⏳ Lade...</span>
     </p>
     <div v-if="imageGallery.images.length > 0">
       <div
@@ -15,15 +17,15 @@
         v-for="(image, index) in imageGallery.images"
         :title="image.name"
       >
-        <button @click="deleteImageAsync(index)">⛔ Löschen</button>
+        <button @click="deleteImageAsync(index)" :disabled="isOffline">⛔ Löschen</button>
       </div>
     </div>
-    <h1 v-else>No Images... 😢</h1>
+    <h1 v-else-if="!isLoading">No Images... 😢</h1>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, onUnmounted } from "vue";
 import FileInput from "@/components/FileInput.vue";
 
 interface Image {
@@ -36,12 +38,29 @@ interface ImageGalleryResult {
 }
 
 const uploadFiles = ref<File[]>([]);
+const isOffline = ref(!navigator.onLine);
+const isLoading = ref(false);
 
 const imageGallery = ref<ImageGalleryResult>({
   images: [],
 });
 
 const loadedImages = ref<Set<string>>(new Set());
+
+// Listen for online/offline events
+function updateOnlineStatus() {
+  isOffline.value = !navigator.onLine;
+}
+
+onMounted(() => {
+  window.addEventListener("online", updateOnlineStatus);
+  window.addEventListener("offline", updateOnlineStatus);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("online", updateOnlineStatus);
+  window.removeEventListener("offline", updateOnlineStatus);
+});
 
 function preloadImage(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -56,6 +75,11 @@ function preloadImage(url: string): Promise<void> {
 }
 
 async function uploadImagesAsync() {
+  if (isOffline.value) {
+    alert("Uploads sind im Offline-Modus nicht möglich");
+    return;
+  }
+
   if (uploadFiles.value.length > 0) {
     try {
       const formData = new FormData();
@@ -91,7 +115,14 @@ async function getImageGalleryAsync() {
 
     throw new Error(response.statusText);
   } catch (error) {
-    alert(error);
+    // If we're offline, try to show cached data instead of an alert
+    if (!navigator.onLine) {
+      console.log("Offline: Versuche zwischengespeicherte Daten zu verwenden");
+      // The service worker will handle serving from cache
+      // If it fails, we'll fall back to empty images array
+    } else {
+      // alert(error);
+    }
 
     return {
       images: [],
@@ -100,6 +131,11 @@ async function getImageGalleryAsync() {
 }
 
 async function deleteImageAsync(index: number) {
+  if (isOffline.value) {
+    alert("Löschen ist im Offline-Modus nicht möglich");
+    return;
+  }
+
   try {
     const image = imageGallery.value.images[index];
     if (!image) {
@@ -121,14 +157,20 @@ async function deleteImageAsync(index: number) {
 }
 
 async function loadImageGalleryAsync() {
-  imageGallery.value = await getImageGalleryAsync();
+  isLoading.value = true;
 
-  // Preload all images
-  const preloadPromises = imageGallery.value.images.map((image) =>
-    preloadImage(image.url).catch(console.error),
-  );
+  try {
+    imageGallery.value = await getImageGalleryAsync();
 
-  await Promise.allSettled(preloadPromises);
+    // Preload all images
+    const preloadPromises = imageGallery.value.images.map((image) =>
+      preloadImage(image.url).catch(console.error),
+    );
+
+    await Promise.allSettled(preloadPromises);
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 onMounted(async () => {
@@ -137,6 +179,22 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.offline-banner {
+  background-color: #ff9800;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.loading-indicator {
+  margin-left: 10px;
+  color: #666;
+  font-style: italic;
+}
+
 .image {
   display: inline-block;
   width: 300px;
@@ -174,5 +232,15 @@ onMounted(async () => {
 
 .image button:hover {
   background: rgba(255, 255, 255, 1);
+}
+
+.image button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>

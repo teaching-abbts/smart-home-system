@@ -47,10 +47,11 @@ export default defineConfig({
         enabled: true,
       },
       workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,jpg,svg}"],
         runtimeCaching: [
           {
             handler: "CacheFirst",
-            urlPattern: /\/image\/.*/i,
+            urlPattern: /\/image\/get\/.*/i,
             options: {
               cacheName: "image-cache",
               expiration: {
@@ -60,6 +61,21 @@ export default defineConfig({
               cacheableResponse: {
                 statuses: [0, 200],
               },
+            },
+          },
+          {
+            handler: "NetworkFirst",
+            urlPattern: /\/image-gallery/i,
+            options: {
+              cacheName: "image-gallery-api-cache",
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+              networkTimeoutSeconds: 3,
             },
           },
         ],

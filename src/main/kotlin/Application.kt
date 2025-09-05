@@ -23,5 +23,5 @@ fun Application.myModule() {
   mapUserInfoRoutes()
   mapImageApi()
   mapImageGalleryApi()
-  // mapSinglePageApplication()
+  mapSinglePageApplication()
 }
